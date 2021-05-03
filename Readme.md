@@ -1,4 +1,4 @@
-#Elasticsearch Playground
+# Elasticsearch Playground
 
 The point of this project is to demonstrate how to use various Scala ES projects to interact with an ES Cluster.
 
