@@ -1,3 +1,7 @@
+curl --location --request DELETE 'http://localhost:9200/*'
+
+printf "\nDeleted all indices. Now generating indices\n"
+
 curl --location --request PUT 'http://localhost:9200/countries.and.cities' \
 --header 'Content-Type: application/json' \
 --data-raw '{

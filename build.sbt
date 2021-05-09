@@ -8,6 +8,7 @@ val circeVersion = "0.12.3"
 val circeExtrasVersion = "0.12.1"
 val AkkaVersion = "2.5.31"
 val alpakkaVersion = "2.0.1"
+val scalaTestVersion = "3.2.7"
 
 
 libraryDependencies ++= Seq(
@@ -15,5 +16,8 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-stream" % AkkaVersion,
   "io.circe" %% "circe-generic" % circeVersion,
   "io.circe" %% "circe-generic-extras" % circeExtrasVersion,
-  "io.circe" %% "circe-parser" % circeVersion
+  "io.circe" %% "circe-parser" % circeVersion,
+  "org.scalactic" %% "scalactic" % scalaTestVersion,
+  "org.scalatest" %% "scalatest" % scalaTestVersion % "test"
+
 )
