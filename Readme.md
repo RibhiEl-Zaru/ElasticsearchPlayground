@@ -9,6 +9,23 @@ The ES projects and Docker setup will be described below
 
 ## Docker Setup
 
+```
+# Get ES running locally
+
+docker compose up -d
+
+# Wait for ES to run locally. Run following command to health check it.
+
+curl localhost:9200             
+
+
+# Bootstrap the indices with the follow script
+
+bash ./bootstrap.sh
+
+
+```
+
 ## Akka Streams
 https://doc.akka.io/docs/alpakka/current/elasticsearch.html
 
