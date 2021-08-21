@@ -10,6 +10,17 @@ case class City(id: String, name: String, population: Int, country: String, my_j
     WriteMessage.createUpsertMessage(id = this.id, source = this)
       .withCustomMetadata(Map("routing" -> this.country))
   }
+
+  def json(): String =
+    s""" {
+       | "_id": : "${this.id},"
+       |  "name" : "${this.name}",
+       |  "population" : ${this.population},
+       |  "my_join_field": {
+       |        "name": "city",
+       |        "parent" : "${this.country}"
+       |    }
+       | } """.stripMargin
 }
 
 object City {

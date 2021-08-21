@@ -1,6 +1,6 @@
 import EndpointSuites.{AdminEndpointsSuite, AlpakkaEndpointsSuite}
 import akka.actor.ActorSystem
-import alpakka.CountryCityDal
+import alpakka.AlpakkaCountryCityDal
 import org.apache.http.HttpHost
 import org.elasticsearch.client.RestClient
 
@@ -13,7 +13,7 @@ trait AppLoader {
   implicit val actorSystem = ActorSystem("ES-API")
 
   private val adminEndpointsSuite = new AdminEndpointsSuite
-  private val esDal: CountryCityDal = new CountryCityDal()
+  private val esDal: AlpakkaCountryCityDal = new AlpakkaCountryCityDal()
 
   private val alpakkaEndpointsSuite = new AlpakkaEndpointsSuite(esDal)
 

@@ -5,7 +5,7 @@ import akka.http.scaladsl.model.{ContentTypes, HttpEntity, HttpResponse, Respons
 import akka.http.scaladsl.server.Directives.{complete, concat, get, path, pathPrefix}
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.ActorMaterializer
-import alpakka.CountryCityDal
+import alpakka.AlpakkaCountryCityDal
 import io.circe.Decoder
 import io.circe.generic.semiauto.deriveDecoder
 import objects.{City, Country}
@@ -13,7 +13,7 @@ import objects.{City, Country}
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContext, Future}
 
-class AlpakkaEndpointsSuite(esDal: CountryCityDal)(implicit val ec: ExecutionContext, implicit val system: ActorSystem) {
+class AlpakkaEndpointsSuite(esDal: AlpakkaCountryCityDal)(implicit val ec: ExecutionContext, implicit val system: ActorSystem) {
 
   implicit val materializer = ActorMaterializer()
 
@@ -36,10 +36,8 @@ class AlpakkaEndpointsSuite(esDal: CountryCityDal)(implicit val ec: ExecutionCon
     }
   }
 
-
   def getCities(): Future[List[City]] = {
     esDal.loadAllCities()
   }
-
 
 }

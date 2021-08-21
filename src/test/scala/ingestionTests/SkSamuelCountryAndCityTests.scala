@@ -2,26 +2,28 @@ package ingestionTests
 
 import akka.actor.ActorSystem
 import alpakka.AlpakkaCountryCityDal
+import com.sksamuel.elastic4s.{ElasticClient, ElasticProperties}
+import com.sksamuel.elastic4s.http.JavaClient
 import objects.{City, Country}
 import org.apache.http.HttpHost
 import org.elasticsearch.client.RestClient
 import org.scalatest.BeforeAndAfter
 import org.scalatest.flatspec.AsyncFlatSpec
+import sksamuel.SKSamuelCountryCityDal
 
-import scala.concurrent.{Await, Future}
-import scala.collection.mutable.ListBuffer
-import scala.concurrent.duration.Duration
+import scala.concurrent.{ExecutionContext, Future}
 
 
-class CountryAndCityTests extends AsyncFlatSpec  with BeforeAndAfter {
+class SkSamuelCountryAndCityTests extends AsyncFlatSpec  with BeforeAndAfter {
   // Fixtures as reassignable variables and mutable objects
 
-  implicit val restClient = RestClient.builder(new HttpHost("localhost", 9200)).build()
+  val props = ElasticProperties("http://localhost:9200")
+  val client = ElasticClient(JavaClient(props))
 
   implicit val actorSystem = ActorSystem("test")
-  val ingester = new AlpakkaCountryCityDal()
+  implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.global
+  val ingester = new SKSamuelCountryCityDal(client, ec)
 
-  // TODO make these tests actually async.
 
   before {
     val country = Country("USA", "United States", 3000000)

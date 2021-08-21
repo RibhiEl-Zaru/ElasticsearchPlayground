@@ -6,21 +6,21 @@ import akka.stream.{ActorMaterializer, Materializer}
 import akka.stream.alpakka.elasticsearch.{ElasticsearchSourceSettings, ElasticsearchWriteSettings, ReadResult, WriteMessage, WriteResult}
 import akka.stream.alpakka.elasticsearch.scaladsl.{ElasticsearchFlow, ElasticsearchSource}
 import akka.stream.scaladsl.{Sink, Source}
+import esUtils.CountryCityDal
 import objects.{City, Country}
 import org.elasticsearch.client.RestClient
 
 import scala.collection.immutable
 import scala.concurrent.Future
 
-class CountryCityDal(implicit val actorSystem: ActorSystem, implicit val esClient: RestClient) {
+class AlpakkaCountryCityDal(implicit val actorSystem: ActorSystem, implicit val esClient: RestClient) extends CountryCityDal {
 
-  val indexName = "countries.and.cities"
 
   val writeSettings = ElasticsearchWriteSettings.Default
   val materializer = ActorMaterializer()
   implicit val ec = actorSystem.dispatcher
 
-  def ingestCountries(countries: List[Country]): Future[immutable.Seq[WriteResult[Country, NotUsed]]] = {
+  def ingestCountries(countries: List[Country]): Future[List[Boolean]] = {
     val reqs = countries.map(_.createWriteMessage())
 
     Source(reqs)
@@ -31,9 +31,10 @@ class CountryCityDal(implicit val actorSystem: ActorSystem, implicit val esClien
           writeSettings
         )
       ).runWith(Sink.seq)
+      .map(_.map(_.success).toList) // TODO should probably add error handling but w/e for now.
   }
 
-  def ingestCities(cities: List[City]): Future[immutable.Seq[WriteResult[City, NotUsed]]] = {
+  def ingestCities(cities: List[City]): Future[List[Boolean]] = {
 
     val reqs = cities.map(_.createWriteMessage())
 
@@ -45,6 +46,7 @@ class CountryCityDal(implicit val actorSystem: ActorSystem, implicit val esClien
           writeSettings
         )
       ).runWith(Sink.seq)
+      .map(_.map(_.success).toList)
   }
 
   def loadAllCities(): Future[List[City]] = {
@@ -52,23 +54,23 @@ class CountryCityDal(implicit val actorSystem: ActorSystem, implicit val esClien
       indexName,
       None,
       searchParams = Map(
-        "query" -> """ {
-                     |         "bool": {
-                     |            "must": [
-                     |                {
-                     |                    "term": {
-                     |                        "my_join_field": "city"
-                     |                    }
-                     |                }
-                     |            ]
-                     |        }
-                     |    } """.stripMargin
+        "query" ->
+          """ {
+            |         "bool": {
+            |            "must": [
+            |                {
+            |                    "term": {
+            |                        "my_join_field": "city"
+            |                    }
+            |                }
+            |            ]
+            |        }
+            |    } """.stripMargin
       ),
       ElasticsearchSourceSettings()
     ).runWith(Sink.seq)
       .map(_.map(_.source).toList)
   }
-
 
 
 }

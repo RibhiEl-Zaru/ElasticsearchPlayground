@@ -26,8 +26,11 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-stream" % AkkaVersion,
   "com.typesafe.akka" %% "akka-http" % AkkaHttpVersion,
   "de.heikoseeberger" %% "akka-http-circe" % "1.37.0",
+  "com.sksamuel.elastic4s" %% "elastic4s-client-esjava" % elastic4sVersion,
+  "com.sksamuel.elastic4s" %% "elastic4s-json-circe" % elastic4sVersion,
+  // test kit
+  "com.sksamuel.elastic4s" %% "elastic4s-testkit" % elastic4sVersion % "test"
 
 
 )
-
 
