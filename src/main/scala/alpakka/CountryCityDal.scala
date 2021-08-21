@@ -1,12 +1,16 @@
 package alpakka
 
+import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.stream.{ActorMaterializer, Materializer}
-import akka.stream.alpakka.elasticsearch.{ElasticsearchSourceSettings, ElasticsearchWriteSettings, WriteMessage}
+import akka.stream.alpakka.elasticsearch.{ElasticsearchSourceSettings, ElasticsearchWriteSettings, ReadResult, WriteMessage, WriteResult}
 import akka.stream.alpakka.elasticsearch.scaladsl.{ElasticsearchFlow, ElasticsearchSource}
 import akka.stream.scaladsl.{Sink, Source}
 import objects.{City, Country}
 import org.elasticsearch.client.RestClient
+
+import scala.collection.immutable
+import scala.concurrent.Future
 
 class CountryCityDal(implicit val actorSystem: ActorSystem, implicit val esClient: RestClient) {
 
@@ -16,7 +20,7 @@ class CountryCityDal(implicit val actorSystem: ActorSystem, implicit val esClien
   val materializer = ActorMaterializer()
   implicit val ec = actorSystem.dispatcher
 
-  def ingestCountries(countries: List[Country]) = {
+  def ingestCountries(countries: List[Country]): Future[immutable.Seq[WriteResult[Country, NotUsed]]] = {
     val reqs = countries.map(_.createWriteMessage())
 
     Source(reqs)
@@ -29,7 +33,7 @@ class CountryCityDal(implicit val actorSystem: ActorSystem, implicit val esClien
       ).runWith(Sink.seq)
   }
 
-  def ingestCities(cities: List[City]) = {
+  def ingestCities(cities: List[City]): Future[immutable.Seq[WriteResult[City, NotUsed]]] = {
 
     val reqs = cities.map(_.createWriteMessage())
 
@@ -43,7 +47,7 @@ class CountryCityDal(implicit val actorSystem: ActorSystem, implicit val esClien
       ).runWith(Sink.seq)
   }
 
-  def loadAllCities() = {
+  def loadAllCities(): Future[List[City]] = {
     ElasticsearchSource.typed[City](
       indexName,
       None,
@@ -62,6 +66,7 @@ class CountryCityDal(implicit val actorSystem: ActorSystem, implicit val esClien
       ),
       ElasticsearchSourceSettings()
     ).runWith(Sink.seq)
+      .map(_.map(_.source).toList)
   }
 
 

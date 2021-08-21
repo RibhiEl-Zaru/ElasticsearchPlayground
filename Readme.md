@@ -6,6 +6,8 @@ The ES Cluster will be stood up via Docker.
 
 The ES projects and Docker setup will be described below
 
+Also there will be a Main proc that will stand up a Finch API . 
+
 
 ## Docker Setup
 

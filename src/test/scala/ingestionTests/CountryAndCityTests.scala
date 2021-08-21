@@ -21,6 +21,8 @@ class CountryAndCityTests extends AsyncFlatSpec  with BeforeAndAfter {
   implicit val actorSystem = ActorSystem("test")
   val ingester = new CountryCityDal()
 
+  // TODO make these tests actually async.
+
   before {
     val country = Country("USA", "United States", 3000000)
     val city = City("Bos", "Boston", 300000, "USA")
