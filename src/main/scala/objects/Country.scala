@@ -1,5 +1,7 @@
 package objects
 
+import akka.NotUsed
+import akka.stream.alpakka.elasticsearch.WriteMessage
 import com.fasterxml.jackson.annotation.JsonValue
 import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto._
@@ -8,7 +10,11 @@ import spray.json
 import spray.json.{JsNumber, JsObject, JsString, JsValue, JsonWriter}
 
 
-case class Country(id: String, name: String, population: Int, my_join_field: String = "country")
+case class Country(id: String, name: String, population: Int, my_join_field: String = "country") extends DataObj[Country]{
+  def createWriteMessage(): WriteMessage[Country, NotUsed] = {
+    WriteMessage.createUpsertMessage(id = this.id, source = this)
+  }
+}
 
 object Country{
 

@@ -1,7 +1,7 @@
 package ingestionTests
 
 import akka.actor.ActorSystem
-import alpakka.CountryCityIngester
+import alpakka.CountryCityDal
 import objects.{City, Country}
 import org.apache.http.HttpHost
 import org.elasticsearch.client.RestClient
@@ -19,7 +19,7 @@ class CountryAndCityTests extends AsyncFlatSpec  with BeforeAndAfter {
   implicit val restClient = RestClient.builder(new HttpHost("localhost", 9200)).build()
 
   implicit val actorSystem = ActorSystem("test")
-  val ingester = new CountryCityIngester()
+  val ingester = new CountryCityDal()
 
   before {
     val country = Country("USA", "United States", 3000000)
@@ -34,11 +34,20 @@ class CountryAndCityTests extends AsyncFlatSpec  with BeforeAndAfter {
   }
   def addSoon(addends: Int*): Future[Int] = Future { addends.sum }
 
-  it should "eventually compute a sum of passed Ints" in {
+  it should "be able to load all cities" in {
+
+    ingester.loadAllCities().map(x => {
+      assert(x.size == 1)
+    })
     val futureSum: Future[Int] = addSoon(1, 2)
     // You can map assertions onto a Future, then return
     // the resulting Future[Assertion] to ScalaTest:
-    futureSum map { sum => assert(sum == 3) }
+
+    Thread.sleep(5000)
+    futureSum map { sum => {
+      assert(sum == 3)
+    } }
+
   }
 
 
